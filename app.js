@@ -1,48 +1,41 @@
-const menuBtn = document.querySelector(".menu-btn");
-const closeBtn = document.querySelector(".close-btn");
-const sideBack = document.querySelector(".sidebar-backdrop");
-const sidebar = document.querySelector(".sidebar");
-const liParent = document.querySelectorAll("li.curet");
-const search = document.querySelectorAll(".wrapper-input");
-const isMobile = window.matchMedia("(max-width: 767px)");
+const checkbox = document.body.querySelectorAll(".mode-subset")
+const rows = document.body.querySelectorAll(".row")
+const mainBox = document.body.querySelector(".mode")
 
-liParent.forEach((li) => {
-  li.addEventListener("click", () => {
-    const child = li.querySelector(".child-list");
+function everyonesStatus() {
+  const allActive = Array.from(rows).every((row) => row.dataset.active === "true")
+  mainBox.dataset.isActive = allActive ? "true" : "false"
+}
 
-    liParent.forEach((otherLi) => {
-      if (otherLi !== li) {
-        otherLi.querySelector(".child-list").classList.add("hidden");
-        otherLi.classList.remove("open");
-      }
-    });
+checkbox.forEach((box) => {
+  box.addEventListener("click", (e) => {
+    const newRow = e.target.closest(".row")
+    if (!newRow) return
+    newRow.dataset.active = newRow.dataset.active === "true" ? "false" : "true"
+    everyonesStatus()
+  })
+})
 
-    child.classList.toggle("hidden");
-    li.classList.toggle("open");
+mainBox.addEventListener("click", () => {
+  const shouldActive = mainBox.dataset.isActive !== "true"
+  rows.forEach((row) => {
+    row.dataset.active = shouldActive ? "true" : "false"
+  })
+  mainBox.dataset.isActive = shouldActive ? "true" : "false"
+})
+
+rows.forEach((row) => {
+  row.addEventListener("mouseover", () => {
+    if (row.previousElementSibling) {
+      row.previousElementSibling.style.borderBottom = "none";
+    }
+    row.style.borderBottom = "none";
   });
-});
 
-search.forEach((item) => {
-  item.addEventListener("click", () => {
-    item.querySelector("input").focus();
+  row.addEventListener("mouseleave", () => {
+    if (row.previousElementSibling) {
+      row.previousElementSibling.style.borderBottom = "1px solid rgba(28, 28, 28, 0.2)";
+    }
+    row.style.borderBottom = "1px solid rgba(28, 28, 28, 0.2)";
   });
-});
-
-menuBtn.addEventListener("click", () => {
-  if (isMobile) {
-    sidebar.classList.toggle("active");
-    sideBack.classList.toggle("active");
-    document.body.style.overflow = "hidden";
-  }
-});
-
-closeBtn.addEventListener("click", () => {
-  sidebar.classList.remove("active");
-  sideBack.classList.remove("active");
-});
-
-sideBack.addEventListener("click", () => {
-  sidebar.classList.remove("active");
-  sideBack.classList.remove("active");
-  document.body.style.overflow = "scroll";
 });
